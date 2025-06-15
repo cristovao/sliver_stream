@@ -58,9 +58,8 @@ void main() {
     bool errorCalled = false;
 
     // Create a stream that throws an error
-    final stream = Stream<int>.error(
-      Exception('Test error'),
-    ).asBroadcastStream();
+    final stream =
+        Stream<int>.error(Exception('Test error')).asBroadcastStream();
 
     await tester.pumpWidget(
       MaterialApp(
@@ -69,7 +68,7 @@ void main() {
             slivers: [
               SliverStream<int>(
                 stream: stream,
-                onError: (error) {
+                onError: (context, error, stackTrace) {
                   errorCalled = true;
                 },
                 builder: (value) => ListTile(title: Text('Item $value')),

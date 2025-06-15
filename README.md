@@ -30,7 +30,7 @@ SliverStream<String>(
   builder: (item) => ListTile(
     title: Text(item),
   ),
-  onError: (error) {
+  onError: (context, error, stacktrace) {
     print('Error: $error');
   },
 )
@@ -64,7 +64,7 @@ SliverStream<String>(
   builder: (item) => ListTile(
     title: Text(item),
   ),
-  onError: (error) {
+  onError: (context, error, stacktrace) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Error: $error'),
@@ -74,6 +74,30 @@ SliverStream<String>(
   },
 )
 ```
+
+### Custom Loading Widget
+
+```dart
+SliverStream<String>(
+  stream: yourStream,
+  builder: (item) => ListTile(
+    title: Text(item),
+  ),
+  loadingWidget: const Center(
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+    ),
+  ),
+)
+```
+
+The `loadingWidget` parameter allows you to customize the loading state appearance. If not provided, a default loading indicator will be shown. You can use any widget as your loading indicator, such as:
+
+- Custom animations
+- Shimmer effects
+- Branded loading screens
+- Skeleton loaders
+- Progress indicators with custom styling
 
 ## How It Works
 

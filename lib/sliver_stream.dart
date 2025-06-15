@@ -12,6 +12,7 @@ class SliverStream<T> extends StatefulWidget {
     required this.stream,
     required this.builder,
     this.onError,
+    this.loadingWidget,
     super.key,
   });
 
@@ -19,9 +20,17 @@ class SliverStream<T> extends StatefulWidget {
   final Stream<T> stream;
 
   /// Function to handle errors
-  final Function? onError;
+  /// [context] - Build context
+  /// [error] - Error
+  /// [stackTrace] - Stack trace
+  final Function(BuildContext context, Object error, StackTrace stackTrace)?
+  onError;
+
+  /// Widget to show when the stream is loading
+  final Widget? loadingWidget;
 
   /// Function to build the element for each item on demand
+  /// [value] - Value of the item
   final Widget Function(T value) builder;
 
   @override
@@ -34,21 +43,27 @@ class _SliverStreamState<T> extends State<SliverStream<T>> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    widget.stream.listen((event) {
-      _updateItemCount();
-    }, onError: widget.onError);
-    _updateItemCount();
-    // });
+    widget.stream.listen(
+      (event) {
+        _updateItemCount();
+      },
+      onError: (error, stackTrace) {
+        if (mounted) {
+          widget.onError?.call(context, error, stackTrace);
+        }
+      },
+    );
   }
 
   Future<void> _updateItemCount() async {
     try {
       final length = await widget.stream.length;
       setState(() => _itemCount = length);
-    } on Exception catch (e) {
-      widget.onError?.call(e);
-      setState(() => _itemCount = 0);
+    } on Exception catch (e, stackTrace) {
+      if (mounted) {
+        widget.onError?.call(context, e, stackTrace);
+        setState(() => _itemCount = 0);
+      }
     }
   }
 
@@ -68,10 +83,11 @@ class _SliverStreamState<T> extends State<SliverStream<T>> {
           future: _getElementAt(index),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
-                padding: EdgeInsetsGeometry.all(10),
-                child: Center(child: CircularProgressIndicator()),
-              );
+              return widget.loadingWidget ??
+                  const Padding(
+                    padding: EdgeInsetsGeometry.all(10),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
             }
 
             if (snapshot.hasError || !snapshot.hasData) {

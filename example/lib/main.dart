@@ -63,25 +63,26 @@ class _MyHomePageState extends State<MyHomePage> {
           // Stream of items
           SliverStream<String>(
             stream: Stream.fromIterable(['Item 1', 'Item 2', 'Item 3']),
-            builder: (item) => Card(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: ListTile(
-                title: Text(item),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Tapped on $item'),
-                      duration: const Duration(seconds: 1),
-                    ),
-                  );
-                },
-              ),
-            ),
-            onError: (error) {
+            builder:
+                (item) => Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: ListTile(
+                    title: Text(item),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Tapped on $item'),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            onError: (context, error, stackTrace) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Error: $error'),
