@@ -1,3 +1,7 @@
+# [1.0.0]
+
+- Making the first official version of SliverStream official
+
 # [0.0.1]
 
 * Initial release of the SliverStream widget
